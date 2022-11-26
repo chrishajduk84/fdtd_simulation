@@ -1,0 +1,30 @@
+Need multiple layers:
+* Electric Field (E)
+* Magnetic Field (H)
+
+Time-domain solution to Maxwell's equations:
+∇ x E(t) = -µ*∂H(t)/∂t
+... = -µ*[H(t+dt/2) - H(t-dt/2)]/(t2 - t1)
+
+H(t+dt/2) = H(t-dt/2) - dt/µ * [∇ x E(t)]      (1)
+
+∇ x H(t) = ε*∂E(t)/∂t
+... = ε*[E(t+dt) - E(t)]/(t2 - t1)
+
+E(t+dt) = E(t) + dt/ε * [∇ x H(t+dt/2)]        (2)
+
+Start with equation 1, use that to compute equation 2
+
+ε and µ differ by orders of magnitude, so plotting both will be difficult. It is better to normalize into (using E' = sqrt(ε/µ)*E:
+H(t+dt/2) = H(t-dt/2) - dt/(sqrt(µε)) * [∇ x E(t)]      (1b)
+E(t+dt) = E(t) + dt/(sqrt(µε)) * [∇ x H(t+dt/2)]        (2b)
+
+Time-scale is based on Courant Stability Conditions - simplifed to:
+dt = n_min*delta_min/(2*c)
+n_min = minimum refractive index
+delta_min = smallest spacing in the grid (x/y/z)
+
+∇ x E(t) = dE/dx + dE/dy + dE/dz in 3d (as an example)
+
+
+
