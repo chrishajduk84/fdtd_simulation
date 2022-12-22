@@ -16,10 +16,12 @@ class Visualizer1D:
         self.ax.clear()
         self.time_index += 1
         for field_name, data in self._grid.fields:
-            x = list(range(len(data)))
-            y = [data[i].value for i in x]
-            self.ax.plot(x, y, label=field_name)  # [x1, x2], [y1, y2]
+            if field_name in (ElectricFieldPoint, MagneticFieldPoint):
+                x = list(range(len(data)))
+                y = [data[i].value for i in x]
+                self.ax.plot(x, y, label=field_name)  # [x1, x2], [y1, y2]
         self.ax.legend()
+        pyplot.ylim((-0.1, 0.1))
         self.fig.canvas.draw()
         self.fig.canvas.flush_events()
         pyplot.pause(0.01)
