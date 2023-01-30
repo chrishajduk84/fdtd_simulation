@@ -1,5 +1,7 @@
 import math
 
+from data_handler import DataHandler
+
 
 class Solver:
     pass
@@ -20,7 +22,7 @@ class EMSolver:
 
     @property
     def fields(self):
-        return [self.electric_field, self.magnetic_field]
+        return {0: self.electric_field, 1: self.magnetic_field}
 
     def next_step(self):
         imp_0 = 377.0
@@ -48,11 +50,14 @@ if __name__ == "__main__":
     magnetic_field = FieldLayer([100])
     print(len(electric_field.shape))
     solver = EMSolver(electric_field, magnetic_field)
+    writer = DataHandler(1)
 
     for i in range(250):
         solver.next_step()
         field = solver.fields
-        print(field[0].shape)
+        #print(field)
+        writer.save_frame(field)
+        #print(field[0].shape)
         x = [i for i in range(100)]
         y = [i for i in field[0]]
         pyplot.plot(x, y)

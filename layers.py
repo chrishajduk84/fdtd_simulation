@@ -16,7 +16,7 @@ class DiscreteLayer(Layer, abc.ABC):
 
     def __setslice__(self, i: int, j: int, sequence: Iterable):
         for index in range(j-i):
-            print(sequence[index])
+            #print(sequence[index])
             self._layer[index+i] = sequence[index]
 
     def __delslice__(self, i, j):
@@ -29,10 +29,17 @@ class DiscreteLayer(Layer, abc.ABC):
     def shape(self):
         return self._layer.shape
 
+    def tobytes(self):
+        return self._layer.tobytes()
+
 class FieldLayer(DiscreteLayer):
     def __init__(self, dimensions: Union[Iterable, Tuple[int]]):
         # dtype might need to change to a tensor (each point in space may have multi-dimensional components)???
         self._layer = zeros(dimensions, dtype=float)
+
+    @property
+    def dtype(self):
+        return self._layer.dtype
 
 
 
