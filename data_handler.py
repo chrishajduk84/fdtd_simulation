@@ -25,9 +25,9 @@ class DataHandler:
     # - Elements                                - variable (buffer dump)
 
 
-    def __init__(self, dimensions):
+    def __init__(self, dimensions, base_path=""):
         self.frame_count = 0
-        self.base_path = ""
+        self.base_path = base_path
         self.dimensions = dimensions
     def save_frame(self, field_data):
         with open(os.path.join(self.base_path, f"frame.{self.frame_count}"), 'wb') as f:
@@ -69,33 +69,37 @@ class DataHandler:
 
     def read_frame(self, frame_num):
         # Return field_data
-        with open(os.path.join(self.base_path, f"frame.{frame_num}"), 'rb') as f:
-            d = int.from_bytes(f.read(4), 'little')
-            n = int.from_bytes(f.read(4), 'little')
-            print(d)
-            print(n)
+        try:
 
-            layers_length = []
-            # Lets figure out how many bytes for each layer we need to read
-            for i in range(n):
-                layers_length.append(int.from_bytes(f.read(4), 'little'))
+            with open(os.path.join(self.base_path, f"frame.{frame_num}"), 'rb') as f:
+                d = int.from_bytes(f.read(4), 'little')
+                n = int.from_bytes(f.read(4), 'little')
+                # print(d)
+                # print(n)
 
-            layers = {}
-            for i in range(n):
-                layer_id = int.from_bytes(f.read(4), 'little')
-                layer_num_dim = int.from_bytes(f.read(4), 'little')
-                layer_dtype = int.from_bytes(f.read(4), 'little')
-                # Lets read out each dimension's length/shape to create a multi-dimensional shape variable
-                layer_dimensions = [int.from_bytes(f.read(4), 'little') for i in range(layer_num_dim)]
-                # We have now read the layer header (16 bytes)... lets read the actual numpy buffer data (layer_length - 16)
-                numpy_data = f.read(layers_length[i] - 16)
+                layers_length = []
+                # Lets figure out how many bytes for each layer we need to read
+                for i in range(n):
+                    layers_length.append(int.from_bytes(f.read(4), 'little'))
+
+                layers = {}
+                for i in range(n):
+                    layer_id = int.from_bytes(f.read(4), 'little')
+                    layer_num_dim = int.from_bytes(f.read(4), 'little')
+                    layer_dtype = int.from_bytes(f.read(4), 'little')
+                    # Lets read out each dimension's length/shape to create a multi-dimensional shape variable
+                    layer_dimensions = [int.from_bytes(f.read(4), 'little') for i in range(layer_num_dim)]
+                    # We have now read the layer header (16 bytes)... lets read the actual numpy buffer data (layer_length - 16)
+                    numpy_data = f.read(layers_length[i] - 16)
 
 
-                # Iterate through each layer
-                numpy_object = np.frombuffer(numpy_data, DataHandlerDType.get(layer_dtype)) # Populate using field_id, layer_data
-                numpy_object.shape = layer_dimensions
-                layers[layer_id] = numpy_object
-        return layers
+                    # Iterate through each layer
+                    numpy_object = np.frombuffer(numpy_data, DataHandlerDType.get(layer_dtype)) # Populate using field_id, layer_data
+                    numpy_object.shape = layer_dimensions
+                    layers[layer_id] = numpy_object
+            return layers
+        except FileNotFoundError:
+            return None
 
 
 

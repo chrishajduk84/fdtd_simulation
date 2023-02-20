@@ -1,12 +1,12 @@
 from matplotlib import pyplot
-from grid import Grid1D
-from field import FieldPoint, ElectricFieldPoint, MagneticFieldPoint
+from data_handler import DataHandler, DataHandlerDType
 
 class Visualizer1D:
-    time_index = 0
-    def __init__(self, grid: Grid1D):
+    time_index = -1
+    def __init__(self, data_path):
         self.fig, self.ax = pyplot.subplots()
-        self._grid = grid
+        self.data_path = data_path
+        self.data_handler = DataHandler(1, data_path)
         self.next_frame()
 
     def __next__(self):
@@ -15,16 +15,24 @@ class Visualizer1D:
     def next_frame(self):
         self.ax.clear()
         self.time_index += 1
-        for field_name, data in self._grid.fields:
-            if field_name in (ElectricFieldPoint, MagneticFieldPoint):
+        frame_data = self.data_handler.read_frame(self.time_index)
+
+        if frame_data is None:
+            # Short-cut None-type, which indicates there is no 'next_frame'
+            return False
+
+        for layer_id, data in frame_data.items():
+            if layer_id in (0, 1): # TODO: These are hardcoded for now (Electric field, Magnetic field)
                 x = list(range(len(data)))
-                y = [data[i].value for i in x]
-                self.ax.plot(x, y, label=field_name)  # [x1, x2], [y1, y2]
+                y = [data[i] for i in x]
+                self.ax.plot(x, y, label=layer_id)  # [x1, x2], [y1, y2] # TODO: label should evenutally be a string of the layer name
         self.ax.legend()
         pyplot.ylim((-0.1, 0.1))
         self.fig.canvas.draw()
         self.fig.canvas.flush_events()
         pyplot.pause(0.01)
+
+        return True
 
     def go_to_frame(self):
         pass
@@ -36,12 +44,11 @@ class Visualizer1D:
 
 
 if __name__ == "__main__":
-    grid_1d = Grid1D(200, fields=[ElectricFieldPoint, MagneticFieldPoint])
-    v = Visualizer1D(grid_1d)
+    v = Visualizer1D("")
     v.show()
-    while True:
-        grid_1d.update()
-        v.next_frame()
-        #input("TEST")
-    input("TEST")
+
+    while v.next_frame():
+        pass
+    input("Press enter to close the window...")
+
 

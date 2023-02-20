@@ -25,7 +25,7 @@ class EMSolver:
         return {0: self.electric_field, 1: self.magnetic_field}
 
     def next_step(self):
-        imp_0 = 377.0
+        imp_0 = 377.0 # This is equal to sqrt(u_0/epsilon_0), which is the characteristic impedance of free space
         #TODO: expand to multiple dimensions
         for dim in range(self.dimensionality):
             for i in range(self.shape[dim]-1):
@@ -34,7 +34,8 @@ class EMSolver:
             for i in range(1, self.shape[dim]):
                 self.electric_field[i] = self.electric_field[i] + (self.magnetic_field[i] - self.magnetic_field[i-1]) * imp_0
 
-            self.electric_field[0] = math.exp(-(self.time_step - 30.) * (self.time_step - 30.) / 100.);
+            # TODO: Hardwired Source Node - how do we change this...? Sources can be time-varying and not always hardwired
+            self.electric_field[0] = math.exp(-(self.time_step - 30.) * (self.time_step - 30.) / 100.)
 
         self.time_step += 1
 
