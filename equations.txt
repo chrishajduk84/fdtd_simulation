@@ -8,8 +8,9 @@ Time-domain solution to Maxwell's equations:
 
 H(t+dt/2) = H(t-dt/2) - dt/µ * [∇ x E(t)]      (1)
 
-∇ x H(t) = ε*∂E(t)/∂t
-... = ε*[E(t+dt) - E(t)]/(t2 - t1)
+∇ x H(t) = ε*∂E(t)/∂t + J_0
+
+... = ε*[E(t+dt) - E(t)]/(t2 - t1) + J_0
 
 E(t+dt) = E(t) + dt/ε * [∇ x H(t+dt/2)]        (2)
 
