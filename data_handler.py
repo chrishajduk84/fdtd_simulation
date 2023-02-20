@@ -66,3 +66,47 @@ class DataHandler:
 
         # Update data handler state
         self.frame_count += 1
+
+    def read_frame(self, frame_num):
+        # Return field_data
+        with open(os.path.join(self.base_path, f"frame.{frame_num}"), 'rb') as f:
+            d = int.from_bytes(f.read(4), 'little')
+            n = int.from_bytes(f.read(4), 'little')
+            print(d)
+            print(n)
+
+            layers_length = []
+            # Lets figure out how many bytes for each layer we need to read
+            for i in range(n):
+                layers_length.append(int.from_bytes(f.read(4), 'little'))
+
+            layers = {}
+            for i in range(n):
+                layer_id = int.from_bytes(f.read(4), 'little')
+                layer_num_dim = int.from_bytes(f.read(4), 'little')
+                layer_dtype = int.from_bytes(f.read(4), 'little')
+                # Lets read out each dimension's length/shape to create a multi-dimensional shape variable
+                layer_dimensions = [int.from_bytes(f.read(4), 'little') for i in range(layer_num_dim)]
+                # We have now read the layer header (16 bytes)... lets read the actual numpy buffer data (layer_length - 16)
+                numpy_data = f.read(layers_length[i] - 16)
+
+
+                # Iterate through each layer
+                numpy_object = np.frombuffer(numpy_data, DataHandlerDType.get(layer_dtype)) # Populate using field_id, layer_data
+                numpy_object.shape = layer_dimensions
+                layers[layer_id] = numpy_object
+        return layers
+
+
+
+
+
+if __name__ == "__main__":
+    x = DataHandler(1)
+    data = x.read_frame(1)
+    from matplotlib import pyplot
+
+
+    x = [i for i in range(100)]
+    y = [i for i in data[0]]
+    pyplot.plot(x, y)
