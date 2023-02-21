@@ -13,7 +13,7 @@ class EMSolver:
         self.magnetic_field = magnetic_field  # H
         self.electric_source = electric_source  # E_source (time-varying)
         self.magnetic_source = magnetic_source  # H_source (time-varying)
-        #TODO: how do I do the current_density thing
+        #TODO: how do I do the current_density thing - this might be a duplicate of the electric source
         self.current_density = None           # J = sigma * E, where sigma is conductivity [S/m]
 
         self.shape = self.electric_field.shape #TODO: magnetic field should be the same
@@ -35,7 +35,16 @@ class EMSolver:
                 self.electric_field[i] = self.electric_field[i] + (self.magnetic_field[i] - self.magnetic_field[i-1]) * imp_0
 
             # TODO: Hardwired Source Node - how do we change this...? Sources can be time-varying and not always hardwired
-            self.electric_field[0] = math.exp(-(self.time_step - 30.) * (self.time_step - 30.) / 100.)
+
+            # Additive sources functions - f(t, x,y,z), where y,z depend on the dimension being used
+            # self.electric_source is a pre-computed multi-dimensional array (time dimension, followed by spatial dimensions)
+            # Total dimensionality of the electric_source is (dimensions + 1)
+            for i in range(1, self.shape[dim]):
+                self.electric_field[i] += self.electric_source[self.time_step][i]
+
+            # Hard-wire sources are last
+            # TODO: are hard-wire sources EVER useful? Do I need to do this?
+
 
         self.time_step += 1
 
@@ -50,7 +59,20 @@ if __name__ == "__main__":
     electric_field = FieldLayer([100])
     magnetic_field = FieldLayer([100])
     print(len(electric_field.shape))
-    solver = EMSolver(electric_field, magnetic_field)
+
+    # Pre-generate electric source
+    electric_source = []
+    for t in range(250):
+        time_layer = FieldLayer([100])
+        time_layer[50] = math.exp(-(t - 30.) * (t - 30.) / 100.)
+        time_layer[30] = math.exp(-(t - 30.) * (t - 30.) / 100.)
+        time_layer[80] = math.exp(-(t - 30.) * (t - 30.) / 100.)
+        electric_source.append(time_layer)
+
+    # Solve
+    solver = EMSolver(electric_field, magnetic_field, electric_source=electric_source)
+
+    # Save data
     writer = DataHandler(1)
 
     for i in range(250):

@@ -27,7 +27,7 @@ class Visualizer1D:
                 y = [data[i] for i in x]
                 self.ax.plot(x, y, label=layer_id)  # [x1, x2], [y1, y2] # TODO: label should evenutally be a string of the layer name
         self.ax.legend()
-        pyplot.ylim((-0.1, 0.1))
+        pyplot.ylim((-1, 1))
         self.fig.canvas.draw()
         self.fig.canvas.flush_events()
         pyplot.pause(0.01)
