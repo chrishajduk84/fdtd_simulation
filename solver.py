@@ -64,9 +64,10 @@ if __name__ == "__main__":
     electric_source = []
     for t in range(250):
         time_layer = FieldLayer([100])
+        # for i in range(100):
+        #     time_layer[i] = math.exp(-(i - 30.) * (i - 30.) / 10.)
         time_layer[50] = math.exp(-(t - 30.) * (t - 30.) / 100.)
-        time_layer[30] = math.exp(-(t - 30.) * (t - 30.) / 100.)
-        time_layer[80] = math.exp(-(t - 30.) * (t - 30.) / 100.)
+        #time_layer[80] = 1#math.exp(-(t - 30.) * (t - 30.) / 100.)
         electric_source.append(time_layer)
 
     # Solve
