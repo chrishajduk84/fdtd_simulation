@@ -2,7 +2,7 @@ import abc
 import math
 #from abc import ABC
 
-#(ABC)??
+
 class BoundaryPoint:
     # Default transform is to take the input value and return it as the output
     def __init__(self, boundary_condition=lambda value: value):

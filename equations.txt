@@ -1,3 +1,5 @@
+Used this FDTD reference to assist with this repo: https://eecs.wsu.edu/~schneidj/ufdtd/
+
 Need multiple layers:
 * Electric Field (E)
 * Magnetic Field (H)
@@ -26,6 +28,3 @@ n_min = minimum refractive index
 delta_min = smallest spacing in the grid (x/y/z)
 
 ∇ x E(t) = dE/dx + dE/dy + dE/dz in 3d (as an example)
-
-
-
